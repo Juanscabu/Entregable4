@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import application.model.Cliente;
+import application.model.Producto;
 import application.repository.ClienteRepository;
+import application.repository.ProductoRepository;
 
 import java.util.Optional;
 
@@ -13,10 +15,14 @@ import java.util.Optional;
 	public class ClienteController {
     @Qualifier("clienteRepository")
     @Autowired
-    private final ClienteRepository repository;
 
-    public ClienteController(@Qualifier("clienteRepository") ClienteRepository repository) {
+    private final ClienteRepository repository;
+    private final ProductoRepository repositoryP;
+
+    public ClienteController(@Qualifier("clienteRepository") ClienteRepository repository,@Qualifier("productoRepository") ProductoRepository repositoryP) {
         this.repository = repository;
+        this.repositoryP = repositoryP;
+        
     }
 
     @GetMapping("/")
@@ -52,15 +58,17 @@ import java.util.Optional;
         repository.deleteById(id);
     }
     
-    @PutMapping("/{id}/{id}")
-    Cliente replaceCliente(@RequestBody Cliente newCliente, @PathVariable Long id,@PathVariable Long idP) {
+    @PutMapping("/{id}/comprar")
+    Cliente comprar(@RequestBody Cliente newCliente, @PathVariable Long id)  { //intentar que reciba el id del producto
+    	Long idP = (long) 1234;
+    	Producto producto = repositoryP.findById(idP).get(); //agregar if
         return repository.findById(id)
                 .map(cliente -> {
-                    cliente.setNombre(newCliente.getNombre());
+                    cliente.comprar(producto);
                     return repository.save(cliente);
                 })
                 .orElseGet(() -> {
-                    newCliente.setId(id);
+                    newCliente.setId(id); //agregar exception
                     return repository.save(newCliente);
                 });
     }

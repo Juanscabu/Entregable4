@@ -17,7 +17,7 @@ public class Producto {
 	    private String nombre;
 	    @Column
 	    private int precio;
-	    @ManyToMany
+	    @ManyToMany(mappedBy="Cliente")
 	    private List<Cliente> clientes;
 		
 	    public Producto() {		
