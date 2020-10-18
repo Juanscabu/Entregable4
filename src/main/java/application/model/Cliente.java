@@ -1,13 +1,14 @@
 package application.model;
 
-import lombok.Data;
-
 import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+
+import lombok.Data;
 
 @Entity
 @Data
@@ -16,8 +17,8 @@ public class Cliente {
     private Long id;
     @Column
     private String nombre;
-    @ManyToMany
-    private List<Producto> productos;
+    @OneToMany(mappedBy="producto",fetch=FetchType.EAGER)
+    private List<ProductoCliente> productos;
     
 	public Cliente() {
 	}
@@ -25,10 +26,6 @@ public class Cliente {
 	public Cliente(Long id, String nombre) {
 		this.id = id;
 		this.nombre = nombre;
-	}
-	
-	public void comprar (Producto p) {
-		productos.add(p);
 	}
 	
 }
