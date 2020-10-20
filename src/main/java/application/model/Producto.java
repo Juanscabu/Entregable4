@@ -3,7 +3,6 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
@@ -18,7 +17,7 @@ public class Producto {
 	    private String nombre;
 	    @Column
 	    private float precio;
-	    @OneToMany(mappedBy="cliente",fetch=FetchType.EAGER)
+	    @OneToMany(mappedBy="cliente")
 	    private List<ProductoCliente> clientes;
 		
 	    public Producto() {		

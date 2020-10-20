@@ -2,6 +2,7 @@ package application.controller;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import application.model.Cliente;
 import application.model.Producto;
 import application.model.ProductoCliente;
+import application.model.ProductoClienteId;
 import application.repository.ClienteRepository;
 import application.repository.ProductoClienteRepository;
 import application.repository.ProductoRepository;
@@ -35,12 +37,21 @@ public class ProductoClienteController {
 	    }
 	  
 	  
-	  @PostMapping("/{id}/{idP}")
-	    ProductoCliente comprar(@RequestBody Cliente newCliente, @PathVariable(name = "id",required = true) Long id,  @PathVariable(name = "idP",required = true) Long idP )  { 
+	  @PostMapping("/{id}/{idP}/{cantidad}")
+	    ProductoCliente comprar(@RequestBody Cliente newCliente, @PathVariable(name = "id",required = true) Long id,  @PathVariable(name = "idP",required = true) Long idP,  @PathVariable(name = "cantidad",required = true) int cantidad )  { 
+		  	
+	    	Cliente cliente = repositoryC.findById(id).get();
 	    	Producto producto = repositoryP.findById(idP).get(); 
-	    	Cliente cliente = repositoryC.findById(id).get();//agregar if
+	    	ProductoClienteId idCompuesto = new ProductoClienteId(producto.getId(),cliente.getId());
+	    	Optional<ProductoCliente> opc = repository.findById(idCompuesto);
 	    	LocalDate fecha = LocalDate.now();
-	    	ProductoCliente pc = new ProductoCliente(producto.getId(),cliente.getId(),fecha);
+	    	if (opc.isPresent())
+	    		opc.get().setCantidad(cantidad+opc.get().getCantidad());
+	    	else {
+	    		ProductoCliente pc = new ProductoCliente(producto.getId(),cliente.getId(),fecha,cantidad);
+	    		return repository.save(pc);
+	    	}
+	    	ProductoCliente pc = opc.get();  
 	    	return repository.save(pc);
 	    }
 	  
@@ -55,7 +66,9 @@ public class ProductoClienteController {
 	  
 	  @GetMapping("/mas-vendido")
 	  Producto productoMasVendido() {
-		  return repository.findByMasVendido();
+		  ProductoCliente pc =  repository.findByMasVendido(); 
+		  Producto p = repositoryP.findById(pc.getProducto()).get();
+		  return p;
 	  }
 	  
 }

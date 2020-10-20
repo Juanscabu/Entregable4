@@ -20,15 +20,18 @@ public class ProductoCliente {
 
 	@Column
 	private LocalDate fechaCompra;
+	@Column
+	private int cantidad;
 	
 	public ProductoCliente() {
 		super();
 	}
 
-	public ProductoCliente(Long productoId, Long clienteId, LocalDate fechaCompra) {
+	public ProductoCliente(Long productoId, Long clienteId, LocalDate fechaCompra, int cantidad) {
 		this.producto = productoId;
 		this.cliente = clienteId;
 		this.fechaCompra = fechaCompra;
+		this.cantidad = cantidad;
 	}
 	
 	

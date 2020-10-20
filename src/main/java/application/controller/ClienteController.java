@@ -1,9 +1,12 @@
 package application.controller;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import application.model.Cliente;
@@ -34,9 +38,14 @@ import application.repository.ProductoRepository;
     }
 
     @GetMapping("/")
-    public Iterable<Cliente> getClientes() {
-        return repository.findAll();
-    }
+    public ResponseEntity<List<Cliente>> getClientes() {
+    	 List<Cliente> listaClientes = repository.findAll();
+    	 if (!listaClientes.isEmpty())
+    		 return ResponseEntity.ok().body(listaClientes);
+    		 else {
+    		throw new ClienteNotFoundException("No existen clientes");
+    			 }
+    		 }
     
     @GetMapping("/reporte-monto")
     public Iterable<ReporteMontoTotal> getClientesMonto() {
@@ -59,22 +68,17 @@ import application.repository.ProductoRepository;
     }
 
     @GetMapping("/{id}")
-    Cliente one(@PathVariable Long id) throws Exception {
-         Cliente c = repository.findById(id).get();
-       //  if (c != null) 
-        	 return c;
-        	 /*
+     public ResponseEntity<Cliente> getCliente(@PathVariable Long id) throws Exception { 
+         Optional<Cliente> c = repository.findById(id);
+         if (c.isPresent()) 
+        	 return ResponseEntity.ok().body(c.get());
          else {
-          return Response.setStatus(return Response Status(484).entity("No se encuentra esta carrera"). type(MediaType.TEXT PLAIN).building;
-
-return Response.status (700).entity(c.build(););
-
+        	 throw new ClienteNotFoundException("El cliente de ese id no existe: " + id);
          }
-         */
     }
 
     @PutMapping("/{id}")
-    Cliente replaceCliente(@RequestBody Cliente newCliente, @PathVariable Long id) {
+   public Cliente replaceCliente(@RequestBody Cliente newCliente, @PathVariable Long id) {
         return repository.findById(id)
                 .map(cliente -> {
                     cliente.setNombre(newCliente.getNombre());
@@ -91,8 +95,24 @@ return Response.status (700).entity(c.build(););
         repository.deleteById(id);
     }
     
-    
-   
+@SuppressWarnings("serial")
+@ResponseStatus(HttpStatus.NOT_FOUND)    
+public static class ClienteNotFoundException extends RuntimeException {
+		private String message;
+	  public ClienteNotFoundException(String exception) {
+	    super(exception);
+	    this.message = exception;
+	  }
+	  
+	    public String message() {
+	        return message;
+	    }
+	} 
+
+
+
     
 }
+
+
 
