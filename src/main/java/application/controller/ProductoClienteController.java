@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,9 +36,8 @@ public class ProductoClienteController {
 	    }
 	  
 	  
-	  @PostMapping("/{id}/{idP}/{cantidad}")
-	    ProductoCliente comprar(@RequestBody Cliente newCliente, @PathVariable(name = "id",required = true) Long id,  @PathVariable(name = "idP",required = true) Long idP,  @PathVariable(name = "cantidad",required = true) int cantidad )  { 
-		  	
+	  @PostMapping("/{idP}/{id}/{cantidad}")
+	    ProductoCliente comprar(@PathVariable(name = "id",required = true) Long id,  @PathVariable(name = "idP",required = true) Long idP,  @PathVariable(name = "cantidad",required = true) int cantidad )  { 	  	
 	    	Cliente cliente = repositoryC.findById(id).get();
 	    	Producto producto = repositoryP.findById(idP).get(); 
 	    	ProductoClienteId idCompuesto = new ProductoClienteId(producto.getId(),cliente.getId());
@@ -49,6 +47,7 @@ public class ProductoClienteController {
 	    		opc.get().setCantidad(cantidad+opc.get().getCantidad());
 	    	else {
 	    		ProductoCliente pc = new ProductoCliente(producto.getId(),cliente.getId(),fecha,cantidad);
+	    		cliente.agregar(pc);
 	    		return repository.save(pc);
 	    	}
 	    	ProductoCliente pc = opc.get();  
@@ -58,17 +57,14 @@ public class ProductoClienteController {
 	  @GetMapping("/{fecha}")
 	  Iterable<ProductoCliente> ReporteFecha(@PathVariable String fecha) {
 		  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		  
-		  LocalDate localDate = LocalDate.parse(fecha, formatter);
-		 
+		  LocalDate localDate = LocalDate.parse(fecha, formatter); 
 	        return repository.findAllByFechaCompra(localDate);
 	  }    
 	  
 	  @GetMapping("/mas-vendido")
 	  Producto productoMasVendido() {
-		  ProductoCliente pc =  repository.findByMasVendido(); 
-		  Producto p = repositoryP.findById(pc.getProducto()).get();
-		  return p;
+		 Producto p =  repositoryP.findById(repository.findByMasVendido().get(0).getProducto()).get(); 	
+		 return p;
 	  }
 	  
 }

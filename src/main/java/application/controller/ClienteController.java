@@ -15,10 +15,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMethod;
 
+import application.controller.ProductoController.ProductoNotFoundException;
 import application.model.Cliente;
 import application.model.Producto;
 import application.model.ProductoCliente;
@@ -51,8 +52,9 @@ import application.repository.ProductoRepository;
     		 }
     
     @GetMapping("/reporte-monto")
-    public Iterable<ReporteMontoTotal> getClientesMonto() {
+    public ResponseEntity<Iterable<ReporteMontoTotal>> getClientesMonto() {
         List<Cliente> clientes = repository.findAll();
+        if (!clientes.isEmpty()) {
         List<ReporteMontoTotal> reportes = new ArrayList<ReporteMontoTotal>();
         for(Cliente c: clientes) {
         	float montoTotal = 0;
@@ -62,11 +64,17 @@ import application.repository.ProductoRepository;
         	}
         	reportes.add(new ReporteMontoTotal(c.getId(), c.getNombre(), montoTotal));
         }
-        return reportes;
+        return ResponseEntity.ok().body(reportes);
+        }
+        throw new ClienteNotFoundException("No existen clientes");
     }
 
     @PostMapping("/")
     public Cliente newCliente(@RequestBody Cliente c) {
+    	Cliente cliente = new Cliente();
+    	cliente.setId(c.getId());
+    	cliente.setNombre(c.getNombre());
+    	cliente.setProductos(new ArrayList<ProductoCliente>());
         return repository.save(c);
     }
 
@@ -82,21 +90,29 @@ import application.repository.ProductoRepository;
 
 
    @PutMapping("/{id}")
-   public Cliente replaceCliente(@RequestBody Cliente newCliente, @PathVariable Long id) {
-        return repository.findById(id)
-                .map(cliente -> {
-                    cliente.setNombre(newCliente.getNombre());
-                    return repository.save(cliente);
-                })
-                .orElseGet(() -> {
-                    newCliente.setId(id);
-                    return repository.save(newCliente);
-                });
-    }
-
+   public ResponseEntity<Cliente> replaceCliente(@RequestBody Cliente newCliente, @PathVariable Long id) {
+	   Optional<Cliente> c = repository.findById(id);
+ 	  if (c.isPresent()) {
+     			return  ResponseEntity.ok().body(c.map(Cliente -> {
+                 Cliente.setNombre(newCliente.getNombre());
+                 return repository.save(Cliente);
+             })
+             .orElseGet(() -> {
+                 newCliente.setId(id);
+                 return repository.save(newCliente);
+             }));
+ 	  } 
+ 	  else {
+ 		  throw new ClienteNotFoundException("El cliente a modificar con ese id no existe: " + id);
+ 	  }
+   }
     @DeleteMapping("/{id}")
     void deleteCliente(@PathVariable Long id) {
-        repository.deleteById(id);
+    	  Optional<Cliente> c = repository.findById(id);
+    	  if (c.isPresent())
+    		  repository.deleteById(id);
+    	  else 
+    		  throw new ProductoNotFoundException("El cliente a eliminar con ese id no existe: " + id);
     }
     
 @SuppressWarnings("serial")

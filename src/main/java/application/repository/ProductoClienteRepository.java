@@ -13,8 +13,8 @@ public interface ProductoClienteRepository extends JpaRepository<ProductoCliente
 	  @Query("SELECT pc FROM ProductoCliente pc where pc.fechaCompra = :d")
 	 public List<ProductoCliente> findAllByFechaCompra(LocalDate d);
 	  
-	  @Query("SELECT pc FROM ProductoCliente pc GROUP BY Producto ORDER BY SUM(cantidad) DESC")
-		 public ProductoCliente findByMasVendido();
+	  @Query("SELECT pc FROM ProductoCliente pc GROUP BY pc.producto ORDER BY SUM(cantidad) DESC")
+		 public List<ProductoCliente> findByMasVendido();
 	 
 }
 

@@ -61,21 +61,33 @@ public class ProductoController {
     }
 
     @PutMapping("/{id}")
-    Producto replaceProducto(@RequestBody Producto newProducto, @PathVariable Long id) {
-        return repository.findById(id)
-                .map(Producto -> {
+    ResponseEntity<Producto> replaceProducto(@RequestBody Producto newProducto, @PathVariable Long id) {
+    	  Optional<Producto> p = repository.findById(id);
+    	  if (p.isPresent()) {
+        			return  ResponseEntity.ok().body(p.map(Producto -> {
                     Producto.setNombre(newProducto.getNombre());
+                    Producto.setPrecio(newProducto.getPrecio());
                     return repository.save(Producto);
                 })
                 .orElseGet(() -> {
                     newProducto.setId(id);
                     return repository.save(newProducto);
-                });
+                }));
+    	  } 
+    	  else {
+    		  throw new ProductoNotFoundException("El producto a modificar con ese id no existe: " + id);
+    	  }
+    	  
     }
 
     @DeleteMapping("/{id}")
-    void deletePerson(@PathVariable Long id) {
-        repository.deleteById(id);
+    void deleteProducto(@PathVariable Long id) {
+    	  Optional<Producto> p = repository.findById(id);
+    	  if (p.isPresent())
+    		  repository.deleteById(id);
+    	  else 
+    		  throw new ProductoNotFoundException("El producto a eliminar con ese id no existe: " + id);
+    	  
     }
     
     @SuppressWarnings("serial")
@@ -85,8 +97,7 @@ public class ProductoController {
     	  public ProductoNotFoundException(String exception) {
     	    super(exception);
     	    this.message = exception;
-    	  }
-    	  
+    	  } 	  
     	    public String message() {
     	        return message;
     	    }
