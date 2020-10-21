@@ -1,187 +1,38 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <title>Entregable 3</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            "use strict";
-
-            function guardadoOK(data) {
-                console.log(data);
-                //traerDatosProblemas();
-                console.log("lo guarda");
-            }
-
-            $("#btnEstudiantes").on("click", function(event) {
-                event.preventDefault();
-                let libreta = $("#libreta").val();
-                let nombre = $("#nombre").val();
-                let apellido = $("#apellido").val();
-                let edad = $("#edad").val();
-                let genero = $("#genero").val();
-                let documento = $("#documento").val();
-                let ciudad = $("#ciudad").val();
-                let objeto = {
-                    "libreta": libreta,
-                    "nombre": nombre,
-                    "apellido": apellido,
-                    "edad": edad,
-                    "genero": genero,
-                    "documento": documento,
-                    "ciudad": ciudad,
-                };
-
-                $.ajax({
-                    "url": "http://localhost:8080/Entregable3/rest/estudiante/",
-                    "method": "POST",
-                    "contentType": "application/json; charset=utf-8",
-                    "data": JSON.stringify(objeto),
-                    "dataType": "JSON",
-                    "success": guardadoOK,
-                    "error": function(xmlhr, r, error) {
-                        alert("Error al enviar");
-                    }
-                })
-            })
-
-            $("#btnCarrera").on("click", function(event) {
-                event.preventDefault();
-                let nombre = $("#nombreCarrera").val();
-                let objeto = {
-                    "nombre": nombre
-                };
-
-                $.ajax({
-                    "url": "http://localhost:8080/Entregable3/rest/carrera/",
-                    "method": "POST",
-                    "contentType": "application/json; charset=utf-8",
-                    "data": JSON.stringify(objeto),
-                    "dataType": "JSON",
-                    "success": guardadoOK,
-                    "error": function(xmlhr, r, error) {
-                        alert("Error al enviar");
-                    }
-                })
-            })
-
-            $("#btnRegistro").on("click", function(event) {
-                event.preventDefault();
-                let libreta = $("#libretaR").val();
-                let carrera = $("#nombreR").val();
-                let año = $("#anio").val();
-                let objeto = {
-                    "libreta": libreta,
-                    "carrera": carrera,
-                    "año": año,
-                };
-
-                $.ajax({
-                    "url": "http://localhost:8080/Entregable3/rest/registro/" + libreta + "/" + carrera + "/" + año,
-                    "method": "POST",
-                    "contentType": "application/json; charset=utf-8",
-                    "data": JSON.stringify(objeto),
-                    "dataType": "JSON",
-                    "success": guardadoOK,
-                    "error": function(xmlhr, r, error) {
-                        alert("Error al enviar");
-                    }
-                })
-            })
-
-            function cargarTablaEstudiantes(data) {
-                let html = "<tr><th>Libreta</th><th>Nombre</th><th>Apellido</th><th>Edad</th><th>Genero</th><th>Documento</th><th>Ciudad</th></tr>";
-                for (let i = 0; i < data.information.length; i++) {
-                    html += "<tr> <td>" + data.information[i].thing.libreta + "</td>";
-                    html += "<td>" + data.information[i].thing.nombre + "</td>";
-                    html += "<td>" + data.information[i].thing.apellido + "</td>";
-                    html += "<td>" + data.information[i].thing.edad + "</td>";
-                    html += "<td>" + data.information[i].thing.genero + "</td>";
-                    html += "<td>" + data.information[i].thing.documento + "</td>";
-                    html += "<td>" + data.information[i].thing.ciudad + "</td>";
-
-                }
-                $(".js-tabla").html(html);
-                console.log(data);
-            }
-
-            function cargarTablaCarreras(data) {
-                let html = "<tr><th>Nombre</th></tr>";
-                for (let i = 0; i < data.information.length; i++) {
-                    html += "<tr> <td>" + data.information[i].thing.nombre + "</td>";
-
-                }
-                $(".js-tabla").html(html);
-                console.log(data);
-            }
-
-            $("#estudiantes").on("click", function(event) {
-                event.preventDefault();
-                $.ajax({
-                    "url": "http://localhost:8080/Entregable3/rest/estudiante/estudiantes",
-                    "method": "GET",
-                    "contentType": "application/json; charset=utf-8",
-                    "dataType": "JSON",
-                    "success": cargarTablaEstudiantes,
-                    "error": function(xmlhr, r, error) {
-                        console.log(error);
-                    }
-                })
-                $(".js-tabla").html("Cargando tabla...");
-            })
-
-            $("#carreras").on("click", function(event) {
-                event.preventDefault();
-                $.ajax({
-                    "url": "http://localhost:8080/Entregable3/rest/carrera/Reporte",
-                    "method": "GET",
-                    "contentType": "application/json; charset=utf-8",
-                    "dataType": "JSON",
-                    "success": cargarTablaCarreras,
-                    "error": function(xmlhr, r, error) {
-                        console.log(error);
-                    }
-                })
-                $(".js-tabla").html("Cargando tabla...");
-            })
-
-        });
-    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquitecturas</title>
 </head>
 
 <body>
-    <h1>Entregable 3</h1>
+    <h1>Entregable 4</h1>
     <h2>nota: hacer solo un click de enviar, anda aunque no muestre nada</h2>
-    <h3>Crear Estudiante</h3>
+    <h3>Crear Cliente</h3>
     <form method="post" action="rest/estudiante/addEstudiante">
-        <label for="libreta">Libreta:</label>
-        <input type="number" id="libreta" name="libreta"><br><br>
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre"><br><br>
-        <label for="apelldio">Apellido:</label>
-        <input type="text" id="apellido" name="apellido"><br><br>
-        <label for="edad">Edad:</label>
-        <input type="number" id="edad" name="edad"><br><br>
-        <label for="genero">Genero:</label>
-        <input type="text" id="genero" name="genero"><br><br>
-        <label for="documento">Documento:</label>
-        <input type="number" id="documento" name="documento"><br><br>
-        <label for="ciudad">Ciudad:</label>
-        <input type="text" id="ciudad" name="ciudad"><br><br>
+        <label for="cliente">Numero de cliente:</label>
+        <input type="number" id="idC" name="idC"><br><br>
+        <label for="nombreCliente">Nombre:</label>
+        <input type="text" id="nombreCliente" name="nombreCliente"><br><br>
 
-        <button type="submit" id="btnEstudiantes">Enviar</button>
+        <button type="submit" id="btnCliente">Enviar</button>
     </form>
 
-    <h3>Crear carrera</h3>
+    <h3>Crear Producto</h3>
     <form method="post" action="rest/carrera/addCarrera">
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombreCarrera" name="nombre"><br><br>
+        <label for="producto">Numero de producto:</label>
+        <input type="number" id="idP" name="idP"><br><br>
+        <label for="nombreProducto">Nombre:</label>
+        <input type="text" id="nombreProducto" name="nombreProducto"><br><br>
+        <label for="precio">Precio:</label>
+        <input type="number" id="precio" name="precio"><br><br>
 
-        <button type="submit" id="btnCarrera">Enviar</button>
+        <button type="submit" id="btnProducto">Enviar</button>
     </form>
 
-    <h3>Crear Registro</h3>
+    <!--<h3>Crear Registro</h3>
     <form method="post" action="rest/registro/matricularEstudiante">
         <label for="libreta">Libreta:</label>
         <input type="number" id="libretaR" name="libreta"><br><br>
@@ -191,13 +42,17 @@
         <input type="number" id="anio" name="anio"><br><br>
 
         <button type="submit" id="btnRegistro">Enviar</button>
-    </form>
+    </form>-->
 
-    <button type="submit" id="estudiantes">Estudiantes</button>
-    <button type="submit" id="carreras">Carreras</button>
+    <button type="submit" id="clientesGet">Clientes</button>
+    <button type="submit" id="productosGet">Productos</button>
     <table class="js-tabla">
 
     </table>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="js/script.js"></script>
 </body>
 
 </html>

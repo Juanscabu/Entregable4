@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 
 @Entity
@@ -17,6 +19,7 @@ public class Producto {
 	    private String nombre;
 	    @Column
 	    private float precio;
+	    @JsonIgnore
 	    @OneToMany(mappedBy="cliente")
 	    private List<ProductoCliente> clientes;
 		
