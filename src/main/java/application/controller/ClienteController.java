@@ -60,7 +60,7 @@ import application.repository.ProductoRepository;
         	float montoTotal = 0;
         	for (ProductoCliente pc: c.getProductos()) {
         		Producto p = repositoryP.findById(pc.getProducto()).get();
-        		montoTotal += p.getPrecio();
+        		montoTotal += p.getPrecio() * pc.getCantidad();
         	}
         	reportes.add(new ReporteMontoTotal(c.getId(), c.getNombre(), montoTotal));
         }
